@@ -1,0 +1,62 @@
+apply plugin: 'spring-cloud-contract'
+apply plugin: 'maven-publish'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+group = 'io.selflearning'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+
+buildscript {
+	ext {
+		springBootVersion = '1.5.10.RELEASE'
+		verifier_version = '1.2.2.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+		classpath "org.springframework.cloud:spring-cloud-contract-gradle-plugin:${verifier_version}"
+		classpath "org.springframework.cloud:spring-cloud-contract-spec-pact:${verifier_version}"
+		classpath 'au.com.dius:pact-jvm-model:2.4.18'
+	}
+}
+
+
+
+repositories {
+	mavenCentral()
+}
+
+
+ext {
+	springCloudVersion = 'Edgware.SR2'
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.springframework.boot:spring-boot-starter-actuator')
+	//compile('org.springframework.boot:spring-boot-starter-data-redis')
+	compile('com.h2database:h2:1.4.196')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	runtime('com.h2database:h2')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.springframework.cloud:spring-cloud-contract-wiremock')
+	testCompile('org.springframework.cloud:spring-cloud-starter-contract-stub-runner')
+	testCompile('org.springframework.cloud:spring-cloud-starter-contract-verifier')
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+contracts {
+	baseClassMappings {
+		baseClassMapping(".*userservice.*", "io.selflearning.contractprovider.UserServiceBase")
+	}
+}
